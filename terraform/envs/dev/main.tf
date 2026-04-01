@@ -1,4 +1,18 @@
 terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "6.38.0"
+    }
+  }
+}
+
+provider "aws" {
+  # Configuration options
+}
+
+
+terraform {
   backend "s3" {
     bucket         = "botp-terraform-states-rahul-2026"
     key            = "dev/terraform.tfstate"
