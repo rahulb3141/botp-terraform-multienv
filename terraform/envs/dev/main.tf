@@ -8,9 +8,6 @@ terraform {
     }
   }
 
-
-
-terraform {
   backend "s3" {
     bucket         = "botp-terraform-states-rahul-2026"
     key            = "dev/terraform.tfstate"
@@ -25,13 +22,16 @@ provider "aws" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.5.0"  # stable version compatible with AWS provider v5.x
+  version = "5.5.0"
 
   name = "${var.environment}-vpc"
   cidr = var.cidr_block
 
-  azs             = ["us-east-1a", "us-east-1b"]
-  public_subnets  = [cidrsubnet(var.cidr_block, 4, 0), cidrsubnet(var.cidr_block, 4, 1)]
+  azs            = ["us-east-1a", "us-east-1b"]
+  public_subnets = [
+    cidrsubnet(var.cidr_block, 4, 0),
+    cidrsubnet(var.cidr_block, 4, 1)
+  ]
 
   enable_dns_hostnames = true
   enable_dns_support   = true
@@ -40,7 +40,6 @@ module "vpc" {
     Environment = var.environment
   }
 }
-
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -54,11 +53,10 @@ module "eks" {
 
   eks_managed_node_groups = {
     default = {
+      desired_size   = 2
       min_size       = 1
       max_size       = 3
-      desired_size   = 2
       instance_types = ["t3.medium"]
     }
   }
 }
-
