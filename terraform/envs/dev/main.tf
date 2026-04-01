@@ -29,11 +29,24 @@ module "vpc" {
   environment = var.environment
 }
 
+
 module "eks" {
-  source       = "../../modules/eks"
-  cluster_name = "${var.environment}-eks"
-  environment  = var.environment
+  source  = "terraform-aws-modules/eks/aws"
+  version = "20.24.1"
+
+  cluster_name    = "${var.environment}-eks"
+  cluster_version = "1.29"
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.public_subnets
+
+  eks_managed_node_groups = {
+    default = {
+      min_size       = 1
+      max_size       = 3
+      desired_size   = 2
+      instance_types = ["t3.medium"]
+    }
+  }
 }
+
