@@ -1,1 +1,7 @@
+replicaCount: 3
 
+image:
+  tag: "prod-stable"
+
+env:
+  LOG_LEVEL: "warn"
