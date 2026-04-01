@@ -8,7 +8,7 @@ module "eks" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
-  manage_aws_auth_configmap = true
+  # manage_aws_auth_configmap = true
 
   eks_managed_node_groups = {
     default = {
