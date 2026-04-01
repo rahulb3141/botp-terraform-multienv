@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket         = "company-terraform-states"
-    key            = "staging/terraform.tfstate"
+    key            = "botp-terraform-states-rahul-2026"
     region         = "us-east-1"
     dynamodb_table = "terraform-locks"
   }
