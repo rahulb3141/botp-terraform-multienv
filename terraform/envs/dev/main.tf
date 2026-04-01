@@ -1,3 +1,12 @@
+terraform {
+  backend "s3" {
+    bucket         = "company-terraform-states"
+    key            = "dev/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-locks"
+  }
+}
+
 provider "aws" {
   region = var.region
 }
@@ -12,6 +21,7 @@ module "eks" {
   source       = "../../modules/eks"
   cluster_name = "${var.environment}-eks"
   environment  = var.environment
-  vpc_id       = module.vpc.vpc_id
-  subnet_ids   = module.vpc.public_subnets
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.public_subnets
 }
