@@ -9,6 +9,6 @@ variable "environment" {
 }
 
 variable "cidr_block" {
-  type = string
+  type    = string
   default = "10.30.0.0/16"
 }
