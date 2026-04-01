@@ -24,9 +24,21 @@ provider "aws" {
 }
 
 module "vpc" {
-  source      = "../../modules/vpc"
-  cidr_block  = var.cidr_block
-  environment = var.environment
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.5.0"  # stable version compatible with AWS provider v5.x
+
+  name = "${var.environment}-vpc"
+  cidr = var.cidr_block
+
+  azs             = ["us-east-1a", "us-east-1b"]
+  public_subnets  = [cidrsubnet(var.cidr_block, 4, 0), cidrsubnet(var.cidr_block, 4, 1)]
+
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  tags = {
+    Environment = var.environment
+  }
 }
 
 
