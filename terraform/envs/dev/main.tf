@@ -34,10 +34,10 @@ module "vpc" {
   ]
 
   map_public_ip_on_launch = true
-  
+
   private_subnets = [
-      cidrsubnet(var.cidr_block, 4, 2),
-      cidrsubnet(var.cidr_block, 4, 3)
+    cidrsubnet(var.cidr_block, 4, 2),
+    cidrsubnet(var.cidr_block, 4, 3)
   ]
 
 
