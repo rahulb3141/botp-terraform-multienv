@@ -14,4 +14,4 @@ echo "📘 Running Terraform PLAN for environment: $ENV"
 cd "$(dirname "$0")/../envs/$ENV"
 
 terraform init
-terraform plan -var-file="terraform.tfvars"
+terraform plan -var="env=$1"
