@@ -24,7 +24,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.5.0"
 
-  name = "${var.environment}-vpc"
+  name = "${var.env}-vpc"
   cidr = var.cidr_block
 
   azs = ["us-east-1a", "us-east-1b"]
@@ -45,7 +45,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "20.24.1"
 
-  cluster_name    = "${var.environment}-eks"
+  cluster_name    = "${var.env}-eks"
   cluster_version = "1.29"
 
   vpc_id     = module.vpc.vpc_id
