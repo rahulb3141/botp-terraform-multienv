@@ -74,7 +74,7 @@ pipeline {
         stage('Helm Deploy to EKS') {
             when { expression { params.ACTION == "apply" } }
             steps {
-                withAWS(credentials: 'aws-creds-id', region: "${AWS_REGION}") {
+                withAWS(credentials: 'aws-credentials', region: "${AWS_REGION}") {
                     sh '''
                         echo "Updating kubeconfig..."
                         aws eks update-kubeconfig --name ${ENV}-eks --region ${AWS_REGION}
