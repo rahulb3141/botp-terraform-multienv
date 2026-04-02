@@ -14,4 +14,4 @@ echo "🚀 Applying Terraform for environment: $ENV"
 cd "$(dirname "$0")/../envs/$ENV"
 
 terraform init
-terraform apply -var-file="terraform.tfvars" -auto-approve
+terraform apply -auto-approve -var="env=$1"
