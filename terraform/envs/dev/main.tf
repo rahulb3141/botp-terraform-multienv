@@ -33,6 +33,14 @@ module "vpc" {
     cidrsubnet(var.cidr_block, 4, 1)
   ]
 
+  map_public_ip_on_launch = true
+  
+  private_subnets = [
+      cidrsubnet(var.cidr_block, 4, 2),
+      cidrsubnet(var.cidr_block, 4, 3)
+  ]
+
+
   enable_dns_hostnames = true
   enable_dns_support   = true
 
