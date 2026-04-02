@@ -27,7 +27,7 @@ module "vpc" {
   name = "${var.environment}-vpc"
   cidr = var.cidr_block
 
-  azs            = ["us-east-1a", "us-east-1b"]
+  azs = ["us-east-1a", "us-east-1b"]
   public_subnets = [
     cidrsubnet(var.cidr_block, 4, 0),
     cidrsubnet(var.cidr_block, 4, 1)
