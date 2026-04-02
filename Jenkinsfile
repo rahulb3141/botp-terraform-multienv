@@ -81,7 +81,7 @@ pipeline {
                         export KUBECONFIG=/var/lib/jenkins/.kube/config
 
                         echo "📡 Updating kubeconfig for EKS..."
-                        aws eks update-kubeconfig --name {params.ENV}-eks --region ${AWS_REGION} --kubeconfig \$KUBECONFIG
+                        aws eks update-kubeconfig --name ${params.ENV}-eks --region ${AWS_REGION} --kubeconfig \$KUBECONFIG
 
                         echo "⛵ Deploying Helm chart..."
                         helm upgrade --install app \
