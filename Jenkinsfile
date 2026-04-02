@@ -76,19 +76,19 @@ pipeline {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
                                   credentialsId: 'aws-credentials']]) {
 
-                    sh '''
+                    sh """
                         echo "⚙️ Using AWS Credentials inside Helm stage"
                         export KUBECONFIG=/var/lib/jenkins/.kube/config
 
                         echo "📡 Updating kubeconfig for EKS..."
-                        aws eks update-kubeconfig --name '"${ENV}-eks"' --region '"${AWS_REGION}"' --kubeconfig $KUBECONFIG
+                        aws eks update-kubeconfig --name {params.ENV}-eks --region ${AWS_REGION} --kubeconfig \$KUBECONFIG
 
                         echo "⛵ Deploying Helm chart..."
                         helm upgrade --install app \
                           ./helm/app \
-                          -f ./helm/app/values-'"${ENV}"'.yaml \
+                          -f ./helm/app/values-{params.ENV}.yaml \
                           --namespace default
-                    '''
+                    """
                 }
             }
         }
