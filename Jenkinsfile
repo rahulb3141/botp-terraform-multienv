@@ -70,25 +70,29 @@ pipeline {
             }
         }
 
-        
         stage('Helm Deploy to EKS') {
             when { expression { params.ACTION == "apply" } }
             steps {
-                withAWS(credentials: 'aws-credentials', region: "${AWS_REGION}") {
-                    sh '''
-                        echo "Updating kubeconfig..."
-                        aws eks update-kubeconfig --name ${ENV}-eks --region ${AWS_REGION}
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
+                                  credentialsId: 'aws-credentials']]) {
 
-                        echo "Running helm..."
+                    sh '''
+                        echo "⚙️ Using AWS Credentials inside Helm stage"
+                        export KUBECONFIG=/var/lib/jenkins/.kube/config
+
+                        echo "📡 Updating kubeconfig for EKS..."
+                        aws eks update-kubeconfig --name '"${ENV}-eks"' --region '"${AWS_REGION}"' --kubeconfig $KUBECONFIG
+
+                        echo "⛵ Deploying Helm chart..."
                         helm upgrade --install app \
-                           ./helm/app \
-                          -f ./helm/app/values-${ENV}.yaml \
+                          ./helm/app \
+                          -f ./helm/app/values-'"${ENV}"'.yaml \
                           --namespace default
                     '''
+                }
+            }
         }
     }
-}
-
 
     post {
         success {
