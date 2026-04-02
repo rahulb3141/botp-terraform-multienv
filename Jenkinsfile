@@ -70,24 +70,25 @@ pipeline {
             }
         }
 
+        
         stage('Helm Deploy to EKS') {
             when { expression { params.ACTION == "apply" } }
             steps {
-                script {
-                    echo "🐳 Deploying application to EKS cluster: ${params.ENV}-eks"
+                withAWS(credentials: 'aws-creds-id', region: "${AWS_REGION}") {
+                    sh '''
+                        echo "Updating kubeconfig..."
+                        aws eks update-kubeconfig --name ${ENV}-eks --region ${AWS_REGION}
 
-                    sh """
-                        aws eks update-kubeconfig --name ${params.ENV}-eks --region ${AWS_REGION}
-
+                        echo "Running helm..."
                         helm upgrade --install app \
-                          ./helm/app \
-                          -f ./helm/app/values-${params.ENV}.yaml \
+                           ./helm/app \
+                          -f ./helm/app/values-${ENV}.yaml \
                           --namespace default
-                    """
-                }
-            }
+                    '''
         }
     }
+}
+
 
     post {
         success {
