@@ -37,7 +37,7 @@ module "vpc" {
   enable_dns_support   = true
 
   tags = {
-    Environment = var.environment
+    Environment = var.env
   }
 }
 
