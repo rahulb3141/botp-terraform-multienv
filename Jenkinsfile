@@ -20,6 +20,48 @@ pipeline {
             }
         }
 
+        stage('Verify AWS Identity') {
+            steps {
+                sh '''
+                    echo "=== Current AWS Identity ==="
+                    aws sts get-caller-identity
+                    echo "=== Should show eks-admin-role, NOT root ==="
+                '''
+            }
+        }
+
+        stage('Test EKS Access') {
+            when { expression { params.ACTION == "apply" } }
+            steps {
+                script {
+                    try {
+                        sh '''
+                            echo "=== Testing kubectl access ==="
+                            CLUSTER_NAME="${ENV}-eks"
+                            aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
+                            kubectl get nodes
+                            kubectl get namespaces
+                            echo "=== Checking cluster authentication mode ==="
+                            aws eks describe-cluster --name $CLUSTER_NAME --region $AWS_REGION --query 'cluster.accessConfig.authenticationMode'
+                        '''
+                        echo "✅ kubectl access working!"
+                    } catch (Exception e) {
+                        echo "❌ kubectl access not working: ${e.getMessage()}"
+                        echo """
+                        🔧 TROUBLESHOOTING STEPS:
+                        1. Check if EKS authentication mode supports API access
+                        2. Ensure access entry exists for eks-admin-role
+                        3. Verify cluster name: ${params.ENV}-eks exists
+                        
+                        Available clusters:
+                        """
+                        sh 'aws eks list-clusters --region $AWS_REGION || echo "Could not list clusters"'
+                        error("EKS authentication not configured. Please set up access manually.")
+                    }
+                }
+            }
+        }
+
         stage('Terraform Validate') {
             steps {
                 script {
@@ -73,23 +115,24 @@ pipeline {
         stage('Helm Deploy to EKS') {
             when { expression { params.ACTION == "apply" } }
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
-                                  credentialsId: 'aws-credentials']]) {
+                sh """
+                    echo "⚙️ Using IAM role for Helm deployment"
+                    export KUBECONFIG=/var/lib/jenkins/.kube/config
 
-                    sh """
-                        echo "⚙️ Using AWS Credentials inside Helm stage"
-                        export KUBECONFIG=/var/lib/jenkins/.kube/config
+                    echo "📡 Updating kubeconfig for EKS..."
+                    aws eks update-kubeconfig --name ${params.ENV}-eks --region ${AWS_REGION} --kubeconfig \$KUBECONFIG
 
-                        echo "📡 Updating kubeconfig for EKS..."
-                        aws eks update-kubeconfig --name ${params.ENV}-eks --region ${AWS_REGION} --kubeconfig \$KUBECONFIG
+                    echo "🔍 Verifying kubectl access..."
+                    kubectl get nodes
+                    kubectl get namespaces
 
-                        echo "⛵ Deploying Helm chart..."
-                        helm upgrade --install app \
-                          ./helm/app \
-                          -f ./helm/app/values-{params.ENV}.yaml \
-                          --namespace default
-                    """
-                }
+                    echo "⛵ Deploying Helm chart..."
+                    helm upgrade --install app \
+                      ./helm/app \
+                      -f ./helm/app/values-${params.ENV}.yaml \
+                      --namespace default \
+                      --create-namespace
+                """
             }
         }
     }
