@@ -71,6 +71,22 @@ module "eks" {
       min_size       = 1
       max_size       = 3
       instance_types = ["t3.medium"]
+
+  # Essential configurations for public subnets
+      ami_type      = "AL2_x86_64"
+      capacity_type = "ON_DEMAND"
+      
+      # Disk configuration
+      disk_size = 20
+      disk_type = "gp3"
+      
+      # Network configuration for public subnets
+      subnet_ids = module.vpc.public_subnets
+      
+      # Tagging for better resource management
+      tags = {
+        Environment = var.env
+        NodeGroup   = "default"
     }
   }
 }
