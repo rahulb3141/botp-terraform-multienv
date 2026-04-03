@@ -3,7 +3,7 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "environment" {
+variable "env" {
   type    = string
   default = "staging"
 }
