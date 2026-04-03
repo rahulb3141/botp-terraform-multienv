@@ -88,11 +88,11 @@ module "eks" {
 
       # Network configuration
       remote_access = {}
-      
+
       # Use default launch template
       create_launch_template = false
       launch_template_name   = ""
-      
+
       # Force update strategy
       update_config = {
         max_unavailable_percentage = 50
@@ -102,32 +102,32 @@ module "eks" {
   }
 }
 # Enhanced security group rules
-  node_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
-    }
-    
-    ingress_cluster_all = {
-      description                   = "Cluster to node all ports/protocols"
-      protocol                     = "-1"
-      from_port                    = 0
-      to_port                      = 0
-      type                         = "ingress"
-      source_cluster_security_group = true
-    }
-    
-    egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
+node_security_group_additional_rules = {
+  ingress_self_all = {
+    description = "Node to node all ports/protocols"
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    type        = "ingress"
+    self        = true
   }
+
+  ingress_cluster_all = {
+    description                   = "Cluster to node all ports/protocols"
+    protocol                      = "-1"
+    from_port                     = 0
+    to_port                       = 0
+    type                          = "ingress"
+    source_cluster_security_group = true
+  }
+
+  egress_all = {
+    description      = "Node all egress"
+    protocol         = "-1"
+    from_port        = 0
+    to_port          = 0
+    type             = "egress"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
