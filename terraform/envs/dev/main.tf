@@ -83,10 +83,6 @@ module "eks" {
       # Network configuration for public subnets
       subnet_ids = module.vpc.public_subnets
       
-      # Tagging for better resource management
-      tags = {
-        Environment = var.env
-        NodeGroup   = "default"
     }
   }
 }
