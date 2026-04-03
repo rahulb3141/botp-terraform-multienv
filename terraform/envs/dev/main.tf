@@ -64,12 +64,15 @@ module "eks" {
   cluster_endpoint_public_access       = true
   cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
 
+  # Enable IRSA
+  enable_irsa = true
 
   eks_managed_node_groups = {
     default = {
-      desired_size   = 2
+      name           = "default"
+      desired_size   = 1
       min_size       = 1
-      max_size       = 3
+      max_size       = 2
       instance_types = ["t3.medium"]
 
       # Essential configurations for public subnets
@@ -80,6 +83,51 @@ module "eks" {
       disk_size = 20
       disk_type = "gp3"
 
+      # Explicitly use your working public subnets
+      subnet_ids = ["subnet-0add2dc0ad8f7c53f", "subnet-0305d2f98ebe15682"]
+
+      # Network configuration
+      remote_access = {}
+      
+      # Use default launch template
+      create_launch_template = false
+      launch_template_name   = ""
+      
+      # Force update strategy
+      update_config = {
+        max_unavailable_percentage = 50
+      }
+
     }
   }
 }
+# Enhanced security group rules
+  node_security_group_additional_rules = {
+    ingress_self_all = {
+      description = "Node to node all ports/protocols"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "ingress"
+      self        = true
+    }
+    
+    ingress_cluster_all = {
+      description                   = "Cluster to node all ports/protocols"
+      protocol                     = "-1"
+      from_port                    = 0
+      to_port                      = 0
+      type                         = "ingress"
+      source_cluster_security_group = true
+    }
+    
+    egress_all = {
+      description      = "Node all egress"
+      protocol         = "-1"
+      from_port        = 0
+      to_port          = 0
+      type             = "egress"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
+    }
+  }
