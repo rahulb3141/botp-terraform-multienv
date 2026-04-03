@@ -80,9 +80,6 @@ module "eks" {
       disk_size = 20
       disk_type = "gp3"
 
-      # Network configuration for public subnets
-      subnet_ids = module.vpc.public_subnets
-
     }
   }
 }
