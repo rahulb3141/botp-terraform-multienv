@@ -72,18 +72,18 @@ module "eks" {
       min_size       = 1
       max_size       = 2
       instance_types = ["t3.medium"]
-      
+
       # Essential configurations
       ami_type      = "AL2_x86_64"
       capacity_type = "ON_DEMAND"
-      
+
       # Disk configuration
       disk_size = 20
       disk_type = "gp3"
-      
+
       # Explicitly use your working public subnets
       subnet_ids = ["subnet-0add2dc0ad8f7c53f", "subnet-0305d2f98ebe15682"]
-      
+
       # Tagging
       tags = {
         Environment = var.env
@@ -91,7 +91,7 @@ module "eks" {
       }
     }
   }
-  
+
   # Cluster tags
   tags = {
     Environment = var.env
